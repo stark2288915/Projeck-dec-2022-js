@@ -1,41 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 </head>
 <body>
 
 <style>
     body{
-        margin: 0px;
         background: #362f2f;
     }
-    .showTitle{
-        position: absolute;
-        top: 90%;
-        left: 46%;
-        display: flex;
+
+    .bigBlock{
+        display: block;
     }
 
-    .param{
-        margin: 3px;
-        border-block: solid;
-        writing-mode: horizontal-tb;
-        display: inline-block;
-    }
-
-    .posts{
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
     .wrapper{
+        display: block;
+
+
+    }
+
+    .charBlock{
         background: #dd4e4e;
         border: solid;
         margin: 5px;
         display: inline-block;
         padding: 5px;
+    }
+
+    .oneChar{
+        margin: 5px;
+        border-block: solid;
+        writing-mode: horizontal-tb;
+    }
+
+    .allCommentsBlock{
+
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
     }
 
     .comment{
@@ -46,13 +54,15 @@
         background: blanchedalmond;
         border: solid;
         margin: 5px;
-
     }
+
     .h3{
         display: block;
         width: 100%;
         text-align: center;
     }
+
+
 
 </style>
 
@@ -61,75 +71,56 @@
     bigBlock.classList.add('bigBlock');
     document.body.appendChild(bigBlock);
 
-
-    let urlLoc = new URL(location.href);
-    let user = urlLoc.searchParams.get('info');
-    let userObj = JSON.parse(user);
-    let userId = `userId=${userObj['id']}`;
-
-
     let wrapper = document.createElement('div');
     wrapper.classList.add('wrapper');
     bigBlock.append(wrapper);
 
+    let charBlock = document.createElement('div');
+    charBlock.classList.add('charBlock');
+    wrapper.append(charBlock);
 
-    function unpackObj (obj) {
+    let allCommentsBlock = document.createElement('div');
+    allCommentsBlock.classList.add('allCommentsBlock');
+    wrapper.append(allCommentsBlock);
+
+    let url = new URL(location.href);
+    let objUrl = url.searchParams.get('info');
+    let json = JSON.parse(objUrl);
+    let postId = `postId=${json['id']}`;
+
+
+
+    function unpackObj(obj){
         for (const key in obj) {
-
-            if (typeof obj[key] === 'object') {
-                let params = document.createElement('h3');
-                params.innerText = `${key}`;
-                params.classList.add('params');
-                wrapper.append(params);
-
-                unpackObj(obj[key]);
-            } else {
-                let param = document.createElement('div');
-                param.classList.add('param');
-                param.innerText = `${key}: ${obj[key]}`;
-                wrapper.append(param);
-            }
+            let oneChar = document.createElement('div');
+            oneChar.classList.add('oneChar');
+            oneChar.innerText = `${key}: ${obj[key]}`;
+            charBlock.append(oneChar);
         }
     }
 
-    unpackObj(userObj);
+    unpackObj(json);
+
+    let urlComments = new URL(`https://jsonplaceholder.typicode.com/comments?${postId}`);
+
+    fetch(urlComments)
+        .then(value => value.json())
+        .then(value => {
+            let h3 = document.createElement('h3');
+            h3.innerText = 'Post\'s comments';
+            h3.classList.add('h3');
+            allCommentsBlock.append(h3);
 
 
+            value.forEach(element=>{
+                let comment = document.createElement('div');
+                comment.classList.add('comment');
+                comment.innerText = `${element['body']}`;
+                allCommentsBlock.append(comment);
 
-    let urlPosts = new URL(`https://jsonplaceholder.typicode.com/posts?${userId}`);
-    let showTitle = document.createElement('button');
-    showTitle.classList.add('showTitle');
-    showTitle.innerText = 'post of current user';
-    wrapper.append(showTitle);
+            });
+        });
 
-
-    showTitle.onclick = function (){
-
-        fetch(urlPosts)
-            .then(value => value.json())
-            .then(value => {
-                let posts = document.createElement('div');
-                posts.classList.add('posts');
-                document.body.appendChild(posts);
-                posts.classList.add('posts');
-
-                let h3 = document.createElement('h3');
-                h3.innerText = 'User\'s posts';
-                h3.classList.add('h3');
-                posts.append(h3);
-
-                value.forEach(element=>{
-                    let a = document.createElement('a');
-                    a.classList.add('comment');
-                    a.innerText = element['title'];
-                    a.href = 'post-details.html?info=' + JSON.stringify(element);
-                    posts.append(a);
-                    showTitle.remove();
-
-                })});
-
-
-    }
 
 </script>
 

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<style>
+    body{
+        background: dimgray;
+    }
+    .bigBlock{
+        background: dimgray;
+
+
+
+
+
+
+
+    }
+    /*.param{
+        display: flex;
+        border: solid;
+        width: 10%;
+        height: 100px;
+    }*/
+
+
+    .wrapper {
+
+
+
+
+    }
+    .showTitle{
+        position: absolute;
+        top: 90%;
+        left: 46%;
+        display: flex;
+    }
+    .posts{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+
+    }
+
+    .comment{
+        display: block;
+        width: 18%;
+        text-align: center;
+        color: black;
+        background: blanchedalmond;
+        border: solid;
+        margin: 5px;
+
+    }
+    .h3{
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+
+
+</style>
+
+<script>
+    let bigBlock = document.createElement('div');
+    bigBlock.classList.add('bigBlock');
+    document.body.appendChild(bigBlock);
+
+
+    let urlLoc = new URL(location.href);
+    let user = urlLoc.searchParams.get('info');
+    let userObj = JSON.parse(user);
+    let userId = `userId=${userObj['id']}`;
+
+
+    let wrapper = document.createElement('div');
+    wrapper.classList.add('wrapper');
+    bigBlock.append(wrapper);
+
+
+    function unpackObj (obj) {
+        for (const key in obj) {
+
+            if (typeof obj[key] === 'object') {
+                let params = document.createElement('h3');
+                params.innerText = `${key}`;
+                params.classList.add('params');
+                wrapper.append(params);
+
+                unpackObj(obj[key]);
+            } else {
+                let param = document.createElement('div');
+                param.classList.add('param');
+                param.innerText = `${key}: ${obj[key]}`;
+                wrapper.append(param);
+            }
+        }
+    }
+
+    unpackObj(userObj);
+
+
+
+    let urlPosts = new URL(`https://jsonplaceholder.typicode.com/posts?${userId}`);
+    let showTitle = document.createElement('button');
+    showTitle.classList.add('showTitle');
+    showTitle.innerText = 'post of current user';
+    wrapper.append(showTitle);
+
+
+
+
+    showTitle.onclick = function (){
+
+        fetch(urlPosts)
+            .then(value => value.json())
+            .then(value => {
+                let posts = document.createElement('div');
+                posts.classList.add('posts');
+                document.body.appendChild(posts);
+                posts.classList.add('posts');
+
+                let h3 = document.createElement('h3');
+                h3.innerText = 'User\'s posts';
+                h3.classList.add('h3');
+                posts.append(h3);
+
+                value.forEach(element=>{
+                    let a = document.createElement('a');
+                    a.classList.add('comment');
+                    a.innerText = element['title'];
+                    a.href = 'post-details.html?info=' + JSON.stringify(element);
+                    posts.append(a);
+                    showTitle.remove();
+
+                })});
+
+
+    }
+
+
+</script>
+
+</body>
+</html>

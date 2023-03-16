@@ -46,14 +46,19 @@
 
     }
 
-    .comment{
-        display: block;
-        width: 18%;
-        text-align: center;
+    .postInfo{
+        display: inline-block;
+        width: 20%;
+
         color: black;
         background: blanchedalmond;
         border: solid;
-        margin: 5px;
+        margin: 2%;
+    }
+
+    .postChar{
+        border: solid;
+        margin: 5%;
     }
 
     .h3{
@@ -110,14 +115,21 @@
             h3.classList.add('h3');
             allCommentsBlock.append(h3);
 
+            for (const post of value) {
+                let postInfo = document.createElement('div');
+                postInfo.classList.add('postInfo');
+                allCommentsBlock.append(postInfo);
 
-            value.forEach(element=>{
-                let comment = document.createElement('div');
-                comment.classList.add('comment');
-                comment.innerText = `${element['body']}`;
-                allCommentsBlock.append(comment);
 
-            });
+                for (const key in post) {
+                    let postChar = document.createElement('div');
+                    postChar.classList.add('postChar');
+
+                    postChar.innerText = `${key}: ${post[key]}`;
+                    postInfo.append(postChar);
+                }
+
+            }
         });
 
 </script>
